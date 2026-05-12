@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useApiKey } from '@/lib/api-key-context';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Eye, EyeOff, ArrowRight, Loader2 } from 'lucide-react';
+import { Eye, EyeOff, ArrowRight, Loader2, GitFork } from 'lucide-react';
 import { ThemeToggle } from './theme-toggle';
 import axios from 'axios';
 
@@ -131,7 +131,23 @@ export function ApiKeyGate({ children }: ApiKeyGateProps) {
           </Button>
         </a>
       </div>
-      <div className="absolute bottom-4 right-4">
+      <div className="absolute bottom-4 right-4 flex items-center gap-2">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8"
+          asChild
+        >
+          <a
+            href="https://github.com/BrontoStephen/BrontoVibe"
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Fork on GitHub"
+          >
+            <GitFork className="h-4 w-4" />
+            <span className="sr-only">Fork on GitHub</span>
+          </a>
+        </Button>
         <ThemeToggle />
       </div>
     </div>
