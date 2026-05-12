@@ -131,24 +131,29 @@ export function ApiKeyGate({ children }: ApiKeyGateProps) {
           </Button>
         </a>
       </div>
-      <div className="absolute bottom-4 right-4 flex items-center gap-2">
+      <div className="absolute bottom-4 right-4 flex items-center gap-3">
         <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8"
+          variant="outline"
+          size="sm"
+          className="text-xs bg-card"
           asChild
         >
           <a
             href="https://github.com/BrontoStephen/BrontoVibe"
             target="_blank"
             rel="noopener noreferrer"
-            title="Fork on GitHub"
           >
-            <GitFork className="h-4 w-4" />
-            <span className="sr-only">Fork on GitHub</span>
+            <GitFork className="h-4 w-4 mr-2" />
+            Fork on GitHub
           </a>
         </Button>
         <ThemeToggle />
+      </div>
+      
+      <div className="absolute bottom-20 right-4 max-w-xs text-right">
+        <p className="text-[11px] text-muted-foreground leading-relaxed">
+          Fork this project to create your own log exploration dashboard. Customize it for your team or use it as a starting point for your observability tools.
+        </p>
       </div>
     </div>
   );
