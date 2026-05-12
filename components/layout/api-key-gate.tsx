@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useApiKey } from '@/lib/api-key-context';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Eye, EyeOff, ArrowRight, Loader2, GitFork } from 'lucide-react';
+import { Eye, EyeOff, ArrowRight, Loader2 } from 'lucide-react';
 import { ThemeToggle } from './theme-toggle';
 import axios from 'axios';
 
@@ -129,20 +129,13 @@ export function ApiKeyGate({ children }: ApiKeyGateProps) {
             <p className="text-sm text-muted-foreground leading-relaxed">
               Want your own custom observability dashboard? Deploy on v0 and vibecode your own Bronto UI.
             </p>
-            <Button
-              variant="default"
-              size="lg"
-              asChild
+            <a
+              href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FBrontoStephen%2FBrontoVibe"
+              target="_blank"
+              rel="noopener noreferrer"
             >
-              <a
-                href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FBrontoStephen%2FBrontoVibe"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <GitFork className="h-4 w-4 mr-2" />
-                Deploy on v0
-              </a>
-            </Button>
+              <img src="/deploy-vercel-button.svg" alt="Deploy with Vercel" height="32" />
+            </a>
           </div>
         </div>
       </div>
