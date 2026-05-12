@@ -194,13 +194,13 @@ export function AppSidebar() {
             asChild
           >
             <a
-              href="https://github.com/BrontoStephen/v0-BrontoVibe"
+              href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FBrontoStephen%2FBrontoVibe"
               target="_blank"
               rel="noopener noreferrer"
-              title="Fork on GitHub"
+              title="Deploy on v0"
             >
               <GitFork className="h-4 w-4" />
-              <span className="sr-only">Fork on GitHub</span>
+              <span className="sr-only">Deploy on v0</span>
             </a>
           </Button>
         </SidebarFooter>

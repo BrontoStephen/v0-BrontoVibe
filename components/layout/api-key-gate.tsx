@@ -127,7 +127,7 @@ export function ApiKeyGate({ children }: ApiKeyGateProps) {
         <div className="pt-6 border-t border-border">
           <div className="text-center space-y-4">
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Want your own Bronto UI? Fork this repo and vibe code your custom observability dashboard in v0.
+              Want your own custom observability dashboard? Deploy on v0 and vibecode your own Bronto UI.
             </p>
             <Button
               variant="default"
@@ -135,12 +135,12 @@ export function ApiKeyGate({ children }: ApiKeyGateProps) {
               asChild
             >
               <a
-                href="https://github.com/BrontoStephen/v0-BrontoVibe"
+                href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FBrontoStephen%2FBrontoVibe"
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 <GitFork className="h-4 w-4 mr-2" />
-                Fork on GitHub
+                Deploy on v0
               </a>
             </Button>
           </div>
