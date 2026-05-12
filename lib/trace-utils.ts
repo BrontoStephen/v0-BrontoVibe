@@ -284,3 +284,79 @@ export function groupAttributes(attrs: Record<string, unknown>): Record<string, 
 
   return groups;
 }
+
+// --- Processed Trace type ---
+
+export interface ProcessedTrace {
+  traceId: string;
+  rootSpanName: string;
+  service: string;
+  durationMs: number;
+  timestamp: number;
+  spanCount: number;
+  hasError: boolean;
+  spans: SearchEvent[];
+}
+
+/** Group spans by their trace ID and return processed traces */
+export function groupSpansByTraceId(events: SearchEvent[]): ProcessedTrace[] {
+  const traceMap = new Map<string, SearchEvent[]>();
+
+  // Group all events by trace ID
+  for (const event of events) {
+    const attrs = getMergedAttrs(event);
+    const traceId = getTraceId(attrs);
+    if (!traceId) continue;
+
+    const existing = traceMap.get(traceId) || [];
+    existing.push(event);
+    traceMap.set(traceId, existing);
+  }
+
+  // Convert to ProcessedTrace array
+  const traces: ProcessedTrace[] = [];
+  for (const [traceId, spans] of traceMap) {
+    // Find the root span (no parent or parent_span_id === '0000000000000000')
+    let rootSpan: SearchEvent | undefined;
+    for (const span of spans) {
+      const attrs = getMergedAttrs(span);
+      const parentId = getParentSpanId(attrs);
+      if (!parentId || parentId === '0000000000000000') {
+        rootSpan = span;
+        break;
+      }
+    }
+
+    // If no explicit root, use the first span
+    if (!rootSpan && spans.length > 0) {
+      rootSpan = spans[0];
+    }
+    if (!rootSpan) continue;
+
+    const rootAttrs = getMergedAttrs(rootSpan);
+    const startTimeMs = getStartTimeMs(rootAttrs, rootSpan);
+    const endTimeMs = getEndTimeMs(rootAttrs, startTimeMs);
+    const durationMs = getDurationMs(rootAttrs, startTimeMs, endTimeMs);
+    const hasError = spans.some(s => {
+      const a = getMergedAttrs(s);
+      return a['$span.status_code'] === 'STATUS_CODE_ERROR';
+    });
+
+    traces.push({
+      traceId,
+      rootSpanName: getSpanName(rootAttrs, rootSpan),
+      service: getServiceName(rootAttrs),
+      durationMs,
+      timestamp: startTimeMs ?? rootSpan.timestamp ?? Date.now(),
+      spanCount: spans.length,
+      hasError,
+      spans,
+    });
+  }
+
+  // Sort by timestamp descending (most recent first)
+  traces.sort((a, b) => b.timestamp - a.timestamp);
+  return traces;
+}
+
+
