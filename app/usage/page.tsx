@@ -330,7 +330,14 @@ function UsagePage() {
   const { data, isLoading, error } = useQuery({
     queryKey: ['usage', usageType, timeRange],
     queryFn: ({ signal }) => fetchUsageByLogs(usageType, timeRange, undefined, undefined, 60, signal),
+    retry: (failureCount, error) => {
+      // Don't retry on 403 (permission denied)
+      if ((error as { status?: number })?.status === 403) return false;
+      return failureCount < 3;
+    },
   });
+
+  const isPermissionError = (error as { status?: number })?.status === 403;
 
   const { data: searchUsageData } = useQuery({
     queryKey: ['usage-search-bytes', timeRange],
@@ -345,8 +352,16 @@ function UsagePage() {
         <LoadingSkeleton />
       ) : error ? (
         <Card>
-          <CardContent className="py-8 text-center text-destructive">
-            {error instanceof Error ? error.message : 'Failed to load usage data'}
+          <CardContent className="py-8 text-center">
+            {isPermissionError ? (
+              <div className="flex flex-col items-center">
+                <HardDriveDownload className="h-10 w-10 mb-3 text-muted-foreground opacity-50" />
+                <p className="text-sm font-medium text-foreground mb-1">Usage data not available</p>
+                <p className="text-xs text-muted-foreground">Your API key does not have access to usage data. Contact your Bronto administrator to enable this feature.</p>
+              </div>
+            ) : (
+              <p className="text-destructive">{error instanceof Error ? error.message : 'Failed to load usage data'}</p>
+            )}
           </CardContent>
         </Card>
       ) : (

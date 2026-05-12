@@ -71,7 +71,15 @@ function DashboardsPage() {
   const { data: dashboards = [], isLoading, error: listError } = useQuery({
     queryKey: ['bronto-dashboards'],
     queryFn: () => fetchDashboards(),
+    retry: (failureCount, error) => {
+      // Don't retry on 403 (permission denied) - the API key doesn't have dashboard access
+      if ((error as { status?: number })?.status === 403) return false;
+      return failureCount < 3;
+    },
   });
+
+  // Check if it's a permission error (403)
+  const isPermissionError = (listError as { status?: number })?.status === 403;
 
   useEffect(() => {
     if (!selectedId && dashboards.length > 0) {
@@ -255,9 +263,19 @@ function DashboardsPage() {
                     ))}
                   </div>
                 ) : listError ? (
-                  <div className="flex flex-col items-center justify-center py-16 text-destructive">
-                    <AlertCircle className="h-10 w-10 mb-3 opacity-50" />
-                    <p className="text-xs">{listError instanceof Error ? listError.message : 'Failed to load dashboards'}</p>
+                  <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
+                    {isPermissionError ? (
+                      <>
+                        <LayoutDashboard className="h-10 w-10 mb-3 text-muted-foreground opacity-50" />
+                        <p className="text-sm font-medium text-foreground mb-1">Dashboards not available</p>
+                        <p className="text-xs text-muted-foreground">Your API key does not have access to dashboards. Contact your Bronto administrator to enable this feature.</p>
+                      </>
+                    ) : (
+                      <>
+                        <AlertCircle className="h-10 w-10 mb-3 text-destructive opacity-50" />
+                        <p className="text-xs text-destructive">{listError instanceof Error ? listError.message : 'Failed to load dashboards'}</p>
+                      </>
+                    )}
                   </div>
                 ) : (() => {
                   const dashboardMatchesSearch = (d: Dashboard) => d.name.toLowerCase().includes(searchTerm);
