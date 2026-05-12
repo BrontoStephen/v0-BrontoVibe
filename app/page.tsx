@@ -34,12 +34,12 @@ const DEFAULT_DATASET_PATTERNS = ['audit_trail', 'audit-trail', 'audit trail', '
 
 export default function SearchPage() {
   const { setSlot } = useHeaderSlot();
-  const [urlParams] = useSearchParams();
+  const urlParams = useSearchParams();
 
   const initialState = useMemo<SearchState>(() => {
-    const where = urlParams.get('where');
-    const fromTs = urlParams.get('from_ts');
-    const toTs = urlParams.get('to_ts');
+    const where = urlParams?.get('where');
+    const fromTs = urlParams?.get('from_ts');
+    const toTs = urlParams?.get('to_ts');
     if (where || fromTs) {
       return {
         ...defaultState,
