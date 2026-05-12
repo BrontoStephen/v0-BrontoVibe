@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState, useCallback } from 'react';
-import type { TraceSearchResult } from '@/lib/trace-utils';
+import type { ProcessedTrace } from '@/lib/trace-utils';
 import { formatDuration, formatRelativeTime } from '@/lib/trace-utils';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -18,10 +18,10 @@ type SortField = 'timestamp' | 'duration';
 type SortDir = 'asc' | 'desc';
 
 interface TraceResultsListProps {
-  results: TraceSearchResult[];
+  results: ProcessedTrace[];
   isLoading: boolean;
   selectedTraceId: string | null;
-  onSelectTrace: (result: TraceSearchResult) => void;
+  onSelectTrace: (result: ProcessedTrace) => void;
   onLoadMore?: () => void;
   hasMore?: boolean;
   isLoadingMore?: boolean;
@@ -41,6 +41,7 @@ export function TraceResultsList({
   const [focusIndex, setFocusIndex] = useState(-1);
 
   const sorted = useMemo(() => {
+    if (!results || !Array.isArray(results)) return [];
     const copy = [...results];
     copy.sort((a, b) => {
       const mul = sortDir === 'desc' ? -1 : 1;
@@ -81,7 +82,7 @@ export function TraceResultsList({
     );
   }
 
-  if (results.length === 0) {
+  if (!results || results.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center gap-3">
         <div className="rounded-full bg-muted p-3">

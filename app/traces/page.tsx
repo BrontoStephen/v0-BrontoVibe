@@ -179,10 +179,10 @@ function TracesPage() {
             )}
             <div className="flex-1 min-h-0 overflow-auto">
               <TraceResultsList
-                traces={traces}
+                results={traces}
                 isLoading={tracesQuery.isLoading}
-                selectedTraceId={selectedTrace?.traceId}
-                onSelect={setSelectedTrace}
+                selectedTraceId={selectedTrace?.traceId ?? null}
+                onSelectTrace={setSelectedTrace}
               />
             </div>
           </div>
