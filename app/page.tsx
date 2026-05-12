@@ -1,24 +1,37 @@
 'use client';
 
-import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
+import { Suspense, useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
-import { search, fetchLogs } from '@/lib/bronto-api';
-import type { SearchParams, SearchResponse, SearchEvent } from '@/lib/bronto-types';
+import { search, fetchLogs, fetchNextPage } from '@/lib/bronto-api';
+import type { SearchParams } from '@/lib/bronto-types';
 import type { TimeRange } from '@/lib/bronto-utils';
 import { SearchControls, type SearchState } from '@/components/search/search-controls';
 import { ViewModeSwitcher } from '@/components/search/view-mode-switcher';
 import { TimeRangePicker } from '@/components/search/time-range-picker';
+import { EventsTable } from '@/components/events/events-table';
+import { Histogram } from '@/components/charts/histogram';
+import { SummaryInline } from '@/components/charts/summary-cards';
+import { ContextViewer } from '@/components/events/context-viewer';
 import { useHeaderSlot } from '@/lib/header-slot-context';
 import { toast } from 'sonner';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertCircle, Database } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { AlertCircle, Database, Loader2 } from 'lucide-react';
 import { VIEW_MODES, type ViewMode } from '@/lib/view-modes';
 import { translateQuery, translateBetweenModes } from '@/lib/query-translators';
+
+// Wrapper component to handle Suspense for useSearchParams
+export default function SearchPageWrapper() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center h-full">
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+    }>
+      <SearchPage />
+    </Suspense>
+  );
+}
 
 const defaultState: SearchState = {
   datasets: [],
@@ -32,14 +45,15 @@ const defaultState: SearchState = {
 
 const DEFAULT_DATASET_PATTERNS = ['audit_trail', 'audit-trail', 'audit trail', '.usage', '.traces', '.metrics', 'usage', 'traces', 'metrics'];
 
-export default function SearchPage() {
+function SearchPage() {
   const { setSlot } = useHeaderSlot();
   const urlParams = useSearchParams();
 
   const initialState = useMemo<SearchState>(() => {
-    const where = urlParams?.get('where');
-    const fromTs = urlParams?.get('from_ts');
-    const toTs = urlParams?.get('to_ts');
+    if (!urlParams) return defaultState;
+    const where = urlParams.get('where');
+    const fromTs = urlParams.get('from_ts');
+    const toTs = urlParams.get('to_ts');
     if (where || fromTs) {
       return {
         ...defaultState,
@@ -54,6 +68,9 @@ export default function SearchPage() {
 
   const [searchState, setSearchState] = useState<SearchState>(initialState);
   const [submitted, setSubmitted] = useState<SearchState | null>(null);
+  const [mostRecentFirst, setMostRecentFirst] = useState(true);
+  const [contextUrl, setContextUrl] = useState<string | null>(null);
+  const [loadingMore, setLoadingMore] = useState(false);
 
   const { data: allLogs = [] } = useQuery({
     queryKey: ['bronto-logs'],
@@ -88,6 +105,7 @@ export default function SearchPage() {
   }, [allLogs, searchState]);
 
   const [viewMode, setViewMode] = useState<ViewMode>('bronto');
+  const modeConfig = VIEW_MODES[viewMode];
 
   const handleViewModeChange = useCallback(
     (newMode: ViewMode) => {
@@ -99,6 +117,17 @@ export default function SearchPage() {
     },
     [viewMode]
   );
+
+  // Auto-refresh when time range changes
+  const prevTimeRange = useRef(searchState.timeRange);
+  useEffect(() => {
+    if (prevTimeRange.current !== searchState.timeRange && submitted && searchState.datasets.length > 0) {
+      prevTimeRange.current = searchState.timeRange;
+      setSubmitted({ ...searchState });
+    } else {
+      prevTimeRange.current = searchState.timeRange;
+    }
+  }, [searchState.timeRange, submitted, searchState]);
 
   useEffect(() => {
     setSlot(
@@ -120,15 +149,15 @@ export default function SearchPage() {
         to_ts: state.toTs,
         where: translatedWhere || undefined,
         select: ['*', '@raw'],
-        most_recent_first: true,
+        most_recent_first: mostRecentFirst,
         timeline_enabled: true,
       };
     },
-    [viewMode]
+    [viewMode, mostRecentFirst]
   );
 
   const eventsQuery = useQuery({
-    queryKey: ['bronto-events', submitted],
+    queryKey: ['bronto-events', submitted, mostRecentFirst],
     queryFn: () => {
       const params = buildParams(submitted!);
       return search(params);
@@ -144,8 +173,18 @@ export default function SearchPage() {
     setSubmitted({ ...searchState });
   }, [searchState]);
 
-  const formatTimestamp = (ts: number) => {
-    return new Date(ts).toLocaleString();
+  const handleLoadMore = async () => {
+    const url = eventsQuery.data?.pagination?.next_page_url;
+    if (!url) return;
+    setLoadingMore(true);
+    try {
+      const more = await fetchNextPage(url);
+      eventsQuery.data!.events = [...(eventsQuery.data!.events || []), ...(more.events || [])];
+      eventsQuery.data!.pagination = more.pagination;
+    } catch (err: unknown) {
+      toast.error('Failed to load more', { description: String(err) });
+    }
+    setLoadingMore(false);
   };
 
   return (
@@ -167,58 +206,52 @@ export default function SearchPage() {
       )}
 
       {submitted && (
-        <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
-          {eventsQuery.isError && (
-            <Alert variant="destructive" className="flex-shrink-0 mb-4">
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription className="text-xs">
-                Query failed: {eventsQuery.error instanceof Error ? eventsQuery.error.message : String(eventsQuery.error)}
-              </AlertDescription>
-            </Alert>
-          )}
-
-          {eventsQuery.isLoading && (
-            <div className="flex items-center justify-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        <>
+          <div className="flex-shrink-0 flex flex-col gap-2">
+            <div className="flex items-center justify-between gap-4">
+              <SummaryInline 
+                totals={eventsQuery.data?.totals} 
+                aggregates={submitted?.aggregates?.length ? submitted.aggregates : undefined} 
+                explain={eventsQuery.data?.explain as Record<string, string> | undefined} 
+              />
             </div>
-          )}
+          </div>
 
-          {eventsQuery.data && (
-            <div className="flex-1 min-h-0 overflow-hidden">
-              <Card className="h-full flex flex-col">
-                <CardHeader className="py-3 flex-shrink-0">
-                  <CardTitle className="text-sm flex items-center justify-between">
-                    <span>Events</span>
-                    <Badge variant="secondary">{eventsQuery.data.events?.length || 0} results</Badge>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="flex-1 min-h-0 p-0">
-                  <ScrollArea className="h-full">
-                    <div className="space-y-2 p-4 pt-0">
-                      {eventsQuery.data.events?.map((event: SearchEvent, idx: number) => (
-                        <div key={idx} className="rounded-lg border border-border p-3 text-xs font-mono bg-muted/30 hover:bg-muted/50 transition-colors">
-                          <div className="flex items-center justify-between mb-2">
-                            <span className="text-muted-foreground">{formatTimestamp(event.timestamp)}</span>
-                            {event.metadata?.context && (
-                              <Button variant="ghost" size="sm" className="h-5 text-[10px]">
-                                Context
-                              </Button>
-                            )}
-                          </div>
-                          <div className="whitespace-pre-wrap break-all text-foreground">{event.message || JSON.stringify(event, null, 2)}</div>
-                        </div>
-                      ))}
-                      {(!eventsQuery.data.events || eventsQuery.data.events.length === 0) && (
-                        <div className="text-center py-8 text-muted-foreground">No events found for this query.</div>
-                      )}
-                    </div>
-                  </ScrollArea>
-                </CardContent>
-              </Card>
+          <div className="flex-1 min-h-0 flex flex-col overflow-hidden gap-4">
+            {eventsQuery.isError && (
+              <Alert variant="destructive" className="flex-shrink-0">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription className="text-xs">
+                  Query failed: {eventsQuery.error instanceof Error ? eventsQuery.error.message : String(eventsQuery.error)}
+                </AlertDescription>
+              </Alert>
+            )}
+
+            <div className="flex-shrink-0">
+              <Histogram 
+                data={eventsQuery.data} 
+                isLoading={eventsQuery.isLoading} 
+                barColor={modeConfig.histogramColor} 
+              />
             </div>
-          )}
-        </div>
+
+            <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
+              <EventsTable
+                data={eventsQuery.data}
+                isLoading={eventsQuery.isLoading}
+                onLoadMore={handleLoadMore}
+                isLoadingMore={loadingMore}
+                onViewContext={setContextUrl}
+                mostRecentFirst={mostRecentFirst}
+                onToggleSort={() => setMostRecentFirst((v) => !v)}
+                timeRange={submitted?.timeRange}
+              />
+            </div>
+          </div>
+        </>
       )}
+
+      <ContextViewer contextUrl={contextUrl} onClose={() => setContextUrl(null)} />
     </div>
   );
 }
