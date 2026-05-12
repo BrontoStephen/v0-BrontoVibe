@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { Search, LayoutDashboard, ChartArea, Plus, Sparkles, Trash2, GitFork, icons, type LucideIcon } from 'lucide-react';
+import { Search, LayoutDashboard, ChartArea, Plus, Sparkles, Trash2, icons, type LucideIcon } from 'lucide-react';
 import { IconPicker } from './icon-picker';
 import { NavLink } from '@/components/nav-link';
 import {
@@ -104,9 +104,14 @@ export function AppSidebar() {
     <>
       <Sidebar collapsible="icon">
         <SidebarHeader className="flex items-center justify-center px-2 pt-4 pb-3 relative h-14">
-          <span className={`font-bold text-lg transition-opacity duration-300 ${collapsed ? 'opacity-0' : 'opacity-100'}`}>
-            BrontoVibe
-          </span>
+          {collapsed ? (
+            <img src="/icon.svg" alt="BrontoVibe" width={28} height={28} />
+          ) : (
+            <div className="flex items-center gap-2">
+              <img src="/icon.svg" alt="BrontoVibe" width={24} height={24} />
+              <span className="font-bold text-lg">BrontoVibe</span>
+            </div>
+          )}
         </SidebarHeader>
         <SidebarContent>
           <SidebarGroup>
@@ -199,7 +204,7 @@ export function AppSidebar() {
               rel="noopener noreferrer"
               title="Deploy on v0"
             >
-              <GitFork className="h-4 w-4" />
+              <img src="/icon.svg" alt="" width={16} height={16} aria-hidden="true" />
               <span className="sr-only">Deploy on v0</span>
             </a>
           </Button>
