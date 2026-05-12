@@ -147,8 +147,9 @@ function UsageChart({ data, nameMap }: { data?: UsageResponse; nameMap: Map<stri
                   dataKey={name}
                   stackId="1"
                   stroke={COLORS[i % COLORS.length]}
+                  strokeWidth={2}
                   fill={COLORS[i % COLORS.length]}
-                  fillOpacity={0.3}
+                  fillOpacity={0.6}
                 />
               ))}
             </AreaChart>

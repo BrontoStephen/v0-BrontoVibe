@@ -17,18 +17,18 @@ interface HistogramProps {
 }
 
 const SEVERITY_COLORS: Record<string, string> = {
-  info: 'hsl(220, 100%, 56%)',
-  warning: 'hsl(35, 90%, 55%)',
-  error: 'hsl(0, 70%, 55%)',
+  info: 'hsl(var(--chart-1))',
+  warning: 'hsl(var(--chart-4))',
+  error: 'hsl(var(--chart-5))',
 };
 
 const SERIES_COLORS = [
-  'hsl(210, 80%, 55%)',
-  'hsl(150, 60%, 45%)',
-  'hsl(35, 90%, 55%)',
-  'hsl(0, 70%, 55%)',
-  'hsl(270, 60%, 55%)',
-  'hsl(180, 60%, 45%)',
+  'hsl(var(--chart-1))',
+  'hsl(var(--chart-2))',
+  'hsl(var(--chart-3))',
+  'hsl(var(--chart-4))',
+  'hsl(var(--chart-5))',
+  'hsl(var(--primary))',
 ];
 
 export function Histogram({ data, isLoading, barColor, aggregates, groups, hideNull }: HistogramProps) {
