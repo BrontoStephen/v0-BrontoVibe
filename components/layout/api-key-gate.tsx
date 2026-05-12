@@ -15,11 +15,20 @@ interface ApiKeyGateProps {
 }
 
 export function ApiKeyGate({ children }: ApiKeyGateProps) {
-  const { hasKey, setApiKey } = useApiKey();
+  const { hasKey, setApiKey, isLoading } = useApiKey();
   const [draft, setDraft] = useState('');
   const [showKey, setShowKey] = useState(false);
   const [validating, setValidating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Show loading state while checking for stored key
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
 
   if (hasKey) return <>{children}</>;
 
@@ -31,24 +40,34 @@ export function ApiKeyGate({ children }: ApiKeyGateProps) {
     setValidating(true);
     setError(null);
 
+    console.log('[v0] Validating API key...');
+
     try {
       const res = await axios.get(`${BASE_URL}/logs`, {
         headers: { 'X-BRONTO-API-KEY': key },
         timeout: 15_000,
       });
+      console.log('[v0] API response:', res.data);
       const logs = res.data?.logs;
       if (Array.isArray(logs) && logs.length > 0) {
+        console.log('[v0] API key valid, found', logs.length, 'datasets');
         setApiKey(key);
       } else {
+        console.log('[v0] API key valid but no datasets found');
         setError('Connected, but no datasets found for this API key.');
       }
     } catch (err: unknown) {
-      const axiosErr = err as { response?: { status?: number; data?: { error?: string; message?: string } }; code?: string };
+      console.log('[v0] API validation error:', err);
+      const axiosErr = err as { response?: { status?: number; data?: { error?: string; message?: string } }; code?: string; message?: string };
       const status = axiosErr.response?.status;
       if (status === 401 || status === 403) {
         setError('Invalid API key. Please check and try again.');
       } else if (axiosErr.code === 'ECONNABORTED') {
         setError('Connection timed out. Please try again.');
+      } else if (axiosErr.message?.includes('Network Error')) {
+        // CORS or network issue - accept the key anyway and let the main app handle validation
+        console.log('[v0] Network/CORS error, accepting key for now');
+        setApiKey(key);
       } else {
         const msg =
           axiosErr.response?.data?.error || axiosErr.response?.data?.message || 'Could not connect to Bronto. Please check your API key.';

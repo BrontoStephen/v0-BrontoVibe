@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
+import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from 'react';
 
 const STORAGE_KEY = 'bronto-api-key';
 
@@ -9,15 +9,21 @@ interface ApiKeyContextValue {
   setApiKey: (key: string) => void;
   clearApiKey: () => void;
   hasKey: boolean;
+  isLoading: boolean;
 }
 
 const ApiKeyContext = createContext<ApiKeyContextValue | null>(null);
 
 export function ApiKeyProvider({ children }: { children: ReactNode }) {
-  const [apiKey, setApiKeyState] = useState(() => {
-    if (typeof window === 'undefined') return '';
-    return sessionStorage.getItem(STORAGE_KEY) || '';
-  });
+  const [apiKey, setApiKeyState] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Read from sessionStorage only after mounting (client-side)
+  useEffect(() => {
+    const stored = sessionStorage.getItem(STORAGE_KEY) || '';
+    setApiKeyState(stored);
+    setIsLoading(false);
+  }, []);
 
   const setApiKey = useCallback((key: string) => {
     const cleaned = key.trim();
@@ -35,7 +41,7 @@ export function ApiKeyProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <ApiKeyContext.Provider value={{ apiKey, hasKey: !!apiKey, setApiKey, clearApiKey }}>
+    <ApiKeyContext.Provider value={{ apiKey, hasKey: !!apiKey, setApiKey, clearApiKey, isLoading }}>
       {children}
     </ApiKeyContext.Provider>
   );
