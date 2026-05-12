@@ -143,7 +143,7 @@ export function ApiKeyGate({ children }: ApiKeyGateProps) {
               asChild
             >
               <a
-                href="https://github.com/BrontoStephen/BrontoVibe"
+                href="https://github.com/BrontoStephen/v0-github-integration"
                 target="_blank"
                 rel="noopener noreferrer"
               >
