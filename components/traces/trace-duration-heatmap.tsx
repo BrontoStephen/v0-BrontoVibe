@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import type { TraceSearchResult } from '@/lib/trace-utils';
+import type { ProcessedTrace } from '@/lib/trace-utils';
 import { formatDuration } from '@/lib/trace-utils';
 import {
   Tooltip,
@@ -15,9 +15,9 @@ export interface HeatmapCellSelection {
 }
 
 interface TraceDurationHeatmapProps {
-  results: TraceSearchResult[];
+  traces: ProcessedTrace[];
   selectedTraceId?: string | null;
-  onSelectTrace?: (result: TraceSearchResult) => void;
+  onSelect?: (traceId: string) => void;
   onCellSelect?: (selection: HeatmapCellSelection | null) => void;
   selectedCell?: { col: number; row: number } | null;
 }
@@ -75,27 +75,30 @@ function buildTimeColumns(minTs: number, maxTs: number, targetCols: number): { l
 interface CellData {
   count: number;
   errorCount: number;
-  traces: TraceSearchResult[];
+  traces: ProcessedTrace[];
 }
 
-export function TraceDurationHeatmap({ results, selectedTraceId, onCellSelect, selectedCell }: TraceDurationHeatmapProps) {
+export function TraceDurationHeatmap({ traces, selectedTraceId, onCellSelect, selectedCell }: TraceDurationHeatmapProps) {
   const [localSelectedCell, setLocalSelectedCell] = useState<{ col: number; row: number } | null>(null);
   const activeCell = selectedCell !== undefined ? selectedCell : localSelectedCell;
   const { rows, cols, grid, maxCount } = useMemo(() => {
-    const timestamps = results.map(r => r.timestamp);
-    const durations = results.map(r => r.durationMs);
+    if (!traces || traces.length === 0) {
+      return { rows: [], cols: [], grid: [], maxCount: 0 };
+    }
+    const timestamps = traces.map(r => r.timestamp);
+    const durations = traces.map(r => r.durationMs);
     const minTs = Math.min(...timestamps);
     const maxTs = Math.max(...timestamps);
     const maxDur = Math.max(...durations);
 
-    const cols = buildTimeColumns(minTs, maxTs, Math.min(40, Math.max(10, results.length)));
+    const cols = buildTimeColumns(minTs, maxTs, Math.min(40, Math.max(10, traces.length)));
     const rows = buildDurationBuckets(maxDur);
 
     // Build grid[row][col]
     const grid: CellData[][] = rows.map(() => cols.map(() => ({ count: 0, errorCount: 0, traces: [] })));
 
     let maxCount = 0;
-    for (const r of results) {
+    for (const r of traces) {
       const colIdx = cols.findIndex((c, i) => r.timestamp >= c.fromTs && (i === cols.length - 1 || r.timestamp < c.toTs));
       const rowIdx = rows.findIndex((b, i) => r.durationMs >= b.minMs && (i === rows.length - 1 || r.durationMs < b.maxMs));
       if (colIdx >= 0 && rowIdx >= 0) {
@@ -107,9 +110,9 @@ export function TraceDurationHeatmap({ results, selectedTraceId, onCellSelect, s
     }
 
     return { rows, cols, grid, maxCount };
-  }, [results]);
+  }, [traces]);
 
-  if (results.length === 0) return null;
+  if (!traces || traces.length === 0) return null;
 
   // Color scale: green for ok-heavy, red for error-heavy, intensity by count
   function getCellColor(cell: CellData): string {

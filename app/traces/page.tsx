@@ -45,11 +45,12 @@ function TracesPage() {
   const [submitted, setSubmitted] = useState<{ datasetIds: string[]; filters: TraceSearchFilters } | null>(null);
   const [selectedTrace, setSelectedTrace] = useState<ProcessedTrace | null>(null);
 
-  // Auto-search when datasets are ready and we have a trace ID from URL
+  // Auto-search when datasets are ready
   const didAutoSearch = useRef(false);
   const handleReady = useCallback((ids: string[]) => {
     setDatasetIds(ids);
-    if (!didAutoSearch.current && filters.textSearch && ids.length > 0) {
+    // Auto-search when datasets are loaded (either with trace ID or just show recent traces)
+    if (!didAutoSearch.current && ids.length > 0) {
       didAutoSearch.current = true;
       setSubmitted({ datasetIds: ids, filters });
     }
@@ -94,8 +95,17 @@ function TracesPage() {
       const res = await search(params);
       const events = (res.events || []) as BrontoEvent[];
       
+      console.log('[v0] Trace search response:', { 
+        eventCount: events.length, 
+        datasetIds: submitted.datasetIds,
+        where,
+        isTraceIdLookup 
+      });
+      
       // Group spans by trace ID
       const traces = groupSpansByTraceId(events);
+      console.log('[v0] Grouped into traces:', traces.length);
+      
       return { traces, events, isTraceIdLookup };
     },
     enabled: !!submitted && submitted.datasetIds.length > 0,
