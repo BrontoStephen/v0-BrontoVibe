@@ -101,11 +101,11 @@ function UsageChart({ data, nameMap }: { data?: UsageResponse; nameMap: Map<stri
   if (points.length === 0) return null;
 
   const COLORS = [
-    'hsl(var(--chart-1))',
-    'hsl(var(--chart-2))',
-    'hsl(var(--chart-3))',
-    'hsl(var(--chart-4))',
-    'hsl(var(--chart-5))',
+    '#3b82f6',  // blue
+    '#10b981',  // emerald
+    '#f59e0b',  // amber
+    '#ef4444',  // red
+    '#8b5cf6',  // violet
   ];
 
   return (
@@ -117,7 +117,7 @@ function UsageChart({ data, nameMap }: { data?: UsageResponse; nameMap: Map<stri
         <div className="h-[300px]">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={points}>
-              <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+              <CartesianGrid strokeDasharray="3 3" stroke="#333" />
               <XAxis
                 dataKey="timestamp"
                 tickFormatter={(v) => format(new Date(v), 'MMM d HH:mm')}
@@ -134,10 +134,10 @@ function UsageChart({ data, nameMap }: { data?: UsageResponse; nameMap: Map<stri
                 labelFormatter={(v) => format(new Date(v as number), 'PPpp')}
                 formatter={(v: number, name: string) => [formatBytes(v), nameMap.get(name) || name]}
                 contentStyle={{
-                  backgroundColor: 'hsl(var(--popover))',
-                  border: '1px solid hsl(var(--border))',
-                  borderRadius: 'var(--radius)',
-                  color: 'hsl(var(--popover-foreground))',
+                  backgroundColor: 'rgba(24, 24, 27, 0.95)',
+                  border: '1px solid #333',
+                  borderRadius: '6px',
+                  color: '#fff',
                 }}
               />
               {groups.slice(0, 10).map((name, i) => (

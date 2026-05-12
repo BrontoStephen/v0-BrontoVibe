@@ -17,18 +17,18 @@ interface HistogramProps {
 }
 
 const SEVERITY_COLORS: Record<string, string> = {
-  info: 'hsl(var(--chart-1))',
-  warning: 'hsl(var(--chart-4))',
-  error: 'hsl(var(--chart-5))',
+  info: '#3b82f6',     // blue
+  warning: '#f59e0b',  // amber
+  error: '#ef4444',    // red
 };
 
 const SERIES_COLORS = [
-  'hsl(var(--chart-1))',
-  'hsl(var(--chart-2))',
-  'hsl(var(--chart-3))',
-  'hsl(var(--chart-4))',
-  'hsl(var(--chart-5))',
-  'hsl(var(--primary))',
+  '#3b82f6',  // blue
+  '#10b981',  // emerald
+  '#f59e0b',  // amber
+  '#ef4444',  // red
+  '#8b5cf6',  // violet
+  '#06b6d4',  // cyan
 ];
 
 export function Histogram({ data, isLoading, barColor, aggregates, groups, hideNull }: HistogramProps) {
@@ -67,7 +67,7 @@ export function Histogram({ data, isLoading, barColor, aggregates, groups, hideN
         fill: SERIES_COLORS[i % SERIES_COLORS.length],
         stackId: undefined,
       }))
-    : [{ dataKey: 'count', name: 'count', fill: barColor || 'hsl(var(--primary))', stackId: undefined }];
+    : [{ dataKey: 'count', name: 'count', fill: barColor || '#3b82f6', stackId: undefined }];
 
   const bars = allBars.filter(b => !hiddenSeries.has(b.dataKey));
 
@@ -86,24 +86,25 @@ export function Histogram({ data, isLoading, barColor, aggregates, groups, hideN
                 const m = String(d.getMinutes()).padStart(2, '0');
                 return `${h}:${m}`;
               }}
-              tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
-              axisLine={{ stroke: 'hsl(var(--border))' }}
+              tick={{ fontSize: 10, fill: '#888888' }}
+              axisLine={{ stroke: '#444444' }}
               tickLine={false}
               minTickGap={40}
             />
             <YAxis
               allowDecimals={false}
-              tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
+              tick={{ fontSize: 10, fill: '#888888' }}
               axisLine={false}
               tickLine={false}
               width={36}
             />
             <Tooltip
               contentStyle={{
-                backgroundColor: 'hsl(var(--card))',
-                border: '1px solid hsl(var(--border))',
+                backgroundColor: 'rgba(24, 24, 27, 0.95)',
+                border: '1px solid #333',
                 borderRadius: '6px',
                 fontSize: '11px',
+                color: '#fff',
               }}
               labelFormatter={(v: number) => new Date(v).toLocaleString()}
             />
@@ -136,7 +137,7 @@ export function Histogram({ data, isLoading, barColor, aggregates, groups, hideN
               >
                 <span
                   className="inline-block h-2 w-2 rounded-sm shrink-0 transition-colors"
-                  style={{ backgroundColor: isHidden ? 'hsl(var(--muted-foreground))' : b.fill }}
+                  style={{ backgroundColor: isHidden ? '#666' : b.fill }}
                 />
                 <span className="truncate text-muted-foreground">{b.name}</span>
               </button>
