@@ -204,7 +204,7 @@ export function AppSidebar() {
               rel="noopener noreferrer"
               title="Deploy on v0"
             >
-              <img src="/icon.svg" alt="" width={16} height={16} aria-hidden="true" />
+              <img src="/deploy-vercel-button.svg" alt="" width={20} height={20} aria-hidden="true" />
               <span className="sr-only">Deploy on v0</span>
             </a>
           </Button>
