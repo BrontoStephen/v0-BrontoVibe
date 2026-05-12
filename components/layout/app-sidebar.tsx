@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { Search, LayoutDashboard, ChartArea, Plus, Sparkles, Trash2, icons, type LucideIcon } from 'lucide-react';
+import { Search, LayoutDashboard, ChartArea, Plus, Sparkles, Trash2, GitFork, icons, type LucideIcon } from 'lucide-react';
 import { IconPicker } from './icon-picker';
 import { NavLink } from '@/components/nav-link';
 import {
@@ -187,6 +187,22 @@ export function AppSidebar() {
         >
           <ApiKeySettings />
           <ThemeToggle />
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8"
+            asChild
+          >
+            <a
+              href="https://github.com/BrontoStephen/BrontoVibe"
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Fork on GitHub"
+            >
+              <GitFork className="h-4 w-4" />
+              <span className="sr-only">Fork on GitHub</span>
+            </a>
+          </Button>
         </SidebarFooter>
       </Sidebar>
 
