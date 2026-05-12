@@ -123,6 +123,28 @@ export function ApiKeyGate({ children }: ApiKeyGateProps) {
         </form>
         {error && <p className="text-xs text-destructive text-center animate-in fade-in slide-in-from-top-1">{error}</p>}
         <p className="text-[11px] text-muted-foreground text-center">Your key is stored only for this browser session.</p>
+
+        <div className="pt-6 border-t border-border">
+          <div className="text-center space-y-4">
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Want your own Bronto UI? Fork this repo and vibe code your custom observability dashboard in v0.
+            </p>
+            <Button
+              variant="default"
+              size="lg"
+              asChild
+            >
+              <a
+                href="https://github.com/BrontoStephen/v0-BrontoVibe"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <GitFork className="h-4 w-4 mr-2" />
+                Fork on GitHub
+              </a>
+            </Button>
+          </div>
+        </div>
       </div>
       <div className="absolute bottom-4 left-4">
         <a href="https://www.bronto.io/blog/brontovibe" target="_blank" rel="noopener noreferrer">
@@ -131,29 +153,8 @@ export function ApiKeyGate({ children }: ApiKeyGateProps) {
           </Button>
         </a>
       </div>
-      <div className="absolute bottom-4 right-4 flex flex-col items-end gap-3">
-        <div className="max-w-xs text-right space-y-2">
-          <p className="text-xs text-muted-foreground leading-relaxed">
-            Want your own Bronto UI? Fork this repo, open it in v0, and vibecode your custom observability dashboard on the Vercel platform.
-          </p>
-          <div className="flex items-center justify-end gap-2">
-            <Button
-              variant="default"
-              size="default"
-              asChild
-            >
-              <a
-                href="https://github.com/BrontoStephen/BrontoVibe"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <GitFork className="h-4 w-4 mr-2" />
-                Fork on GitHub
-              </a>
-            </Button>
-            <ThemeToggle />
-          </div>
-        </div>
+      <div className="absolute bottom-4 right-4">
+        <ThemeToggle />
       </div>
     </div>
   );

@@ -194,7 +194,7 @@ export function AppSidebar() {
             asChild
           >
             <a
-              href="https://github.com/BrontoStephen/BrontoVibe"
+              href="https://github.com/BrontoStephen/v0-BrontoVibe"
               target="_blank"
               rel="noopener noreferrer"
               title="Fork on GitHub"
