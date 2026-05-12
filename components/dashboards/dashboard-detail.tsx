@@ -3,7 +3,6 @@
 import { useMemo, useRef, useState, useEffect } from 'react';
 import GridLayout from 'react-grid-layout';
 import 'react-grid-layout/css/styles.css';
-import 'react-resizable/css/styles.css';
 import type { Dashboard, Widget } from '@/lib/bronto-types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { WidgetCard } from './widget-card';
