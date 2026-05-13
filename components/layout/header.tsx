@@ -33,11 +33,19 @@ export function Header() {
       </div>
       <div className="flex items-center gap-3">
         {slot}
-        <img
-          src={resolvedTheme === 'dark' ? '/bronto-vibe-logo-dark.svg' : '/bronto-vibe-logo.svg'}
-          alt="BrontoVibe"
-          className="h-7 w-auto"
-        />
+        <div className="flex items-center gap-2">
+          <img
+            src={resolvedTheme === 'dark' ? '/bronto-logo-dark.svg' : '/bronto-logo-light.svg'}
+            alt="Bronto"
+            className="h-6 w-auto"
+          />
+          <span className="text-muted-foreground text-sm font-light">+</span>
+          <img
+            src={resolvedTheme === 'dark' ? '/v0-logo-dark.svg' : '/v0-logo-light.svg'}
+            alt="v0"
+            className="h-4 w-auto"
+          />
+        </div>
       </div>
     </header>
   );

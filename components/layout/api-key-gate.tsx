@@ -84,12 +84,17 @@ export function ApiKeyGate({ children }: ApiKeyGateProps) {
     <div className="flex min-h-screen items-center justify-center bg-background p-4 relative">
       <div className="w-full max-w-md space-y-8">
         <div className="text-center space-y-4">
-          <div className="flex justify-center">
+          <div className="flex items-center justify-center gap-4">
             <img
-              src={resolvedTheme === 'dark' ? '/bronto-vibe-logo-dark.svg' : '/bronto-vibe-logo.svg'}
-              alt="BrontoVibe"
-              height={48}
-              className="h-12 w-auto"
+              src={resolvedTheme === 'dark' ? '/bronto-logo-dark.svg' : '/bronto-logo-light.svg'}
+              alt="Bronto"
+              className="h-10 w-auto"
+            />
+            <span className="text-muted-foreground text-xl font-light">+</span>
+            <img
+              src={resolvedTheme === 'dark' ? '/v0-logo-dark.svg' : '/v0-logo-light.svg'}
+              alt="v0"
+              className="h-7 w-auto"
             />
           </div>
           <p className="text-sm text-muted-foreground">Enter your Bronto API key to get started.</p>
