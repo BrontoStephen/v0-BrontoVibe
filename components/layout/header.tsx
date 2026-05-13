@@ -3,6 +3,7 @@
 import { usePathname } from 'next/navigation';
 import { useHeaderSlot } from '@/lib/header-slot-context';
 import { useCustomFeatures } from '@/lib/custom-features-context';
+import { useTheme } from 'next-themes';
 
 const pageTitles: Record<string, string> = {
   '/': 'Search & Explore',
@@ -15,6 +16,7 @@ export function Header() {
   const { slot } = useHeaderSlot();
   const pathname = usePathname();
   const { features } = useCustomFeatures();
+  const { resolvedTheme } = useTheme();
 
   let title = pageTitles[pathname];
   if (!title && pathname.startsWith('/my-features/')) {
@@ -29,7 +31,14 @@ export function Header() {
       <div className="flex items-center gap-2">
         <h1 className="text-lg font-bold tracking-tight text-foreground">{title}</h1>
       </div>
-      <div className="flex items-center gap-2">{slot}</div>
+      <div className="flex items-center gap-3">
+        {slot}
+        <img
+          src={resolvedTheme === 'dark' ? '/bronto-vibe-logo-dark.svg' : '/bronto-vibe-logo.svg'}
+          alt="BrontoVibe"
+          className="h-7 w-auto"
+        />
+      </div>
     </header>
   );
 }

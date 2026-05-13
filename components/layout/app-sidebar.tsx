@@ -105,12 +105,14 @@ export function AppSidebar() {
       <Sidebar collapsible="icon">
         <SidebarHeader className="flex items-center justify-center px-2 pt-4 pb-3 relative h-14">
           {collapsed ? (
-            <img src="/icon.svg" alt="BrontoVibe" width={28} height={28} />
+            <img src="/bronto-vibe-icon.png" alt="BrontoVibe" width={32} height={32} />
           ) : (
-            <div className="flex items-center gap-2">
-              <img src="/icon.svg" alt="BrontoVibe" width={24} height={24} />
-              <span className="font-bold text-lg">BrontoVibe</span>
-            </div>
+            <img
+              src={resolvedTheme === 'dark' ? '/bronto-vibe-logo-dark.svg' : '/bronto-vibe-logo.svg'}
+              alt="BrontoVibe"
+              height={32}
+              className="h-8 w-auto"
+            />
           )}
         </SidebarHeader>
         <SidebarContent>
@@ -192,22 +194,18 @@ export function AppSidebar() {
         >
           <ApiKeySettings />
           <ThemeToggle />
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8"
-            asChild
+          <a
+            href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FBrontoStephen%2FBrontoVibe"
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Deploy on Vercel"
           >
-            <a
-              href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FBrontoStephen%2FBrontoVibe"
-              target="_blank"
-              rel="noopener noreferrer"
-              title="Deploy on v0"
-            >
-              <img src="/deploy-vercel-button.svg" alt="" width={20} height={20} aria-hidden="true" />
-              <span className="sr-only">Deploy on v0</span>
-            </a>
-          </Button>
+            {collapsed ? (
+              <img src="/deploy-vercel-button.svg" alt="Deploy with Vercel" width={28} height={28} className="opacity-80 hover:opacity-100 transition-opacity" />
+            ) : (
+              <img src="/deploy-vercel-button.svg" alt="Deploy with Vercel" width={110} height={32} />
+            )}
+          </a>
         </SidebarFooter>
       </Sidebar>
 

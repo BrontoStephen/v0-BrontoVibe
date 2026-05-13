@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Eye, EyeOff, ArrowRight, Loader2 } from 'lucide-react';
 import { ThemeToggle } from './theme-toggle';
+import { useTheme } from 'next-themes';
 import axios from 'axios';
 
 const BASE_URL = 'https://api.eu.bronto.io';
@@ -16,6 +17,7 @@ interface ApiKeyGateProps {
 
 export function ApiKeyGate({ children }: ApiKeyGateProps) {
   const { hasKey, setApiKey, isLoading } = useApiKey();
+  const { resolvedTheme } = useTheme();
   const [draft, setDraft] = useState('');
   const [showKey, setShowKey] = useState(false);
   const [validating, setValidating] = useState(false);
@@ -83,9 +85,13 @@ export function ApiKeyGate({ children }: ApiKeyGateProps) {
       <div className="w-full max-w-md space-y-8">
         <div className="text-center space-y-4">
           <div className="flex justify-center">
-            <img src="/icon.svg" alt="BrontoVibe logo" width={64} height={64} />
+            <img
+              src={resolvedTheme === 'dark' ? '/bronto-vibe-logo-dark.svg' : '/bronto-vibe-logo.svg'}
+              alt="BrontoVibe"
+              height={48}
+              className="h-12 w-auto"
+            />
           </div>
-          <h1 className="text-3xl font-bold text-foreground">BrontoVibe</h1>
           <p className="text-sm text-muted-foreground">Enter your Bronto API key to get started.</p>
         </div>
         <form onSubmit={handleSubmit} className="flex items-center gap-2">
@@ -136,6 +142,7 @@ export function ApiKeyGate({ children }: ApiKeyGateProps) {
               href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FBrontoStephen%2FBrontoVibe"
               target="_blank"
               rel="noopener noreferrer"
+              className="flex justify-center"
             >
               <img src="/deploy-vercel-button.svg" alt="Deploy with Vercel" height="32" />
             </a>
