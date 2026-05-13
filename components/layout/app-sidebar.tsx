@@ -106,20 +106,20 @@ export function AppSidebar() {
         <SidebarHeader className="flex items-center justify-center px-2 pt-4 pb-3 relative h-14">
           {collapsed ? (
             <img
-              src={resolvedTheme === 'dark' ? '/bronto-logo-dark.svg' : '/bronto-logo-light.svg'}
+              src={resolvedTheme === 'dark' ? '/bronto-logo-light.svg' : '/bronto-logo-dark.svg'}
               alt="Bronto"
               className="h-7 w-auto"
             />
           ) : (
             <div className="flex items-center gap-2">
               <img
-                src={resolvedTheme === 'dark' ? '/bronto-logo-dark.svg' : '/bronto-logo-light.svg'}
+                src={resolvedTheme === 'dark' ? '/bronto-logo-light.svg' : '/bronto-logo-dark.svg'}
                 alt="Bronto"
                 className="h-6 w-auto"
               />
               <span className="text-muted-foreground text-sm font-light">+</span>
               <img
-                src={resolvedTheme === 'dark' ? '/v0-logo-dark.svg' : '/v0-logo-light.svg'}
+                src={resolvedTheme === 'dark' ? '/v0-logo-light.svg' : '/v0-logo-dark.svg'}
                 alt="v0"
                 className="h-4 w-auto"
               />
