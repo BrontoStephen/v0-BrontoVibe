@@ -34,7 +34,11 @@ Open [http://localhost:3000](http://localhost:3000) and enter your Bronto API ke
 
 ### Deploy to Vercel
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FBrontoStephen%2FBrontoVibe)
+<p align="center">
+  <a href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FBrontoStephen%2FBrontoVibe">
+    <img src="https://vercel.com/button" alt="Deploy with Vercel" />
+  </a>
+</p>
 
 ## Fork & Customize with v0
 
@@ -51,7 +55,6 @@ Want to build your own custom Bronto UI? This project is designed to be forked a
 - **Styling**: [Tailwind CSS 4](https://tailwindcss.com) + [shadcn/ui](https://ui.shadcn.com)
 - **Charts**: [Recharts](https://recharts.org)
 - **Data Fetching**: [TanStack Query](https://tanstack.com/query)
-- **Database Ready**: [Supabase](https://supabase.com) integration included
 
 ## Project Structure
 
