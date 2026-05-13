@@ -119,7 +119,7 @@ export function AppSidebar() {
               />
               <span className="text-muted-foreground text-sm font-light">+</span>
               <img
-                src={resolvedTheme === 'dark' ? '/v0-logo-light.svg' : '/v0-logo-dark.svg'}
+                src={resolvedTheme === 'dark' ? '/v0-logo-dark.svg' : '/v0-logo-light.svg'}
                 alt="v0"
                 className="h-4 w-auto"
               />

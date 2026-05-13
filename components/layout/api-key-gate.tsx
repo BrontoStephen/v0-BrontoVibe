@@ -92,7 +92,7 @@ export function ApiKeyGate({ children }: ApiKeyGateProps) {
             />
             <span className="text-muted-foreground text-xl font-light">+</span>
             <img
-              src={resolvedTheme === 'dark' ? '/v0-logo-light.svg' : '/v0-logo-dark.svg'}
+              src={resolvedTheme === 'dark' ? '/v0-logo-dark.svg' : '/v0-logo-light.svg'}
               alt="v0"
               className="h-7 w-auto"
             />
